@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미니블록코딩</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","맑은 고딕",Arial,sans-serif;background:#f3f6fb;color:#222}
+button,input{font:inherit}
+button{cursor:pointer}
+.top{height:64px;background:#3182f6;color:#fff;display:flex;align-items:center;padding:0 18px;gap:18px;position:sticky;top:0;z-index:20}
+.logo{font-size:23px;font-weight:800;white-space:nowrap}
+.nav{display:flex;gap:4px}
+.nav button{border:0;background:transparent;color:#fff;padding:10px 12px;border-radius:9px;font-weight:700}
+.nav button:hover,.nav button.active{background:#ffffff24}
+.topUser{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px}
+.topUser button{border:0;border-radius:8px;padding:8px 11px;background:#fff;color:#3182f6;font-weight:700}
+.page{display:none}.page.active{display:block}
+.home{max-width:1180px;margin:0 auto;padding:28px 22px 50px}
+.hero{background:linear-gradient(135deg,#3182f6,#7758ff);border-radius:24px;padding:42px;color:white;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:0 12px 30px #3156c325}
+.hero h1{font-size:42px;margin:0 0 12px}.hero p{font-size:18px;line-height:1.7;margin:0 0 20px}
+.hero button{border:0;border-radius:10px;padding:12px 18px;font-weight:800;margin-right:8px}
+.primary{background:#3182f6;color:#fff}.white{background:#fff;color:#3182f6}
+.section{margin-top:28px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 5px 18px #0000000a}
+.card .ico{font-size:32px}.card h3{margin:10px 0 6px}.card p{margin:0;color:#666;line-height:1.5}
+.works{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.work{background:#fff;border-radius:16px;padding:14px}.thumb{height:120px;border-radius:12px;background:#edf3ff;display:flex;align-items:center;justify-content:center;font-size:55px}.workrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px;flex-wrap:wrap}
+.workrow button{border:0;background:#3182f6;color:#fff;border-radius:8px;padding:7px 10px}
+.empty{background:#fff;border-radius:16px;padding:35px;text-align:center;color:#777}
+.footer{background:#20242a;color:#aaa;padding:28px;text-align:center}
+
+.editor{height:calc(100vh - 64px);min-height:620px;display:grid;grid-template-columns:260px minmax(430px,1fr) 360px;overflow:hidden}
+.left,.center,.right{min-height:0}
+.left{background:#eef1f5;border-right:1px solid #dfe3e8;display:flex;flex-direction:column}
+.objHead{padding:12px 12px 6px;font-weight:800;font-size:16px}
+.objList{height:130px;overflow:auto;padding:5px 10px}.objItem{background:#fff;border-radius:9px;padding:8px 10px;margin-bottom:5px;border:1px solid #e4e7eb;display:flex;align-items:center;gap:8px}.objItem.sel{outline:2px solid #3182f6}.miniIcon{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
+.small2{font-size:13px}
+.tabs{display:flex;padding:8px 10px 0;gap:3px}.tabs button{border:0;background:#fff;padding:8px;border-radius:8px 8px 0 0;flex:1;font-weight:800}.tabs button.active{background:#3182f6;color:#fff}
+.leftPanel{padding:7px 10px;min-height:0;overflow:auto;flex:1}
+.catbar{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}.catbar button{border:0;border-radius:7px;padding:6px 7px;background:#fff;font-size:11px;font-weight:800}.catbar button.active{background:#3182f6;color:#fff}
+.paletteBlock{background:#fff;border-radius:8px;padding:9px 10px;margin:5px 0;font-size:12px;font-weight:700;border-left:5px solid #3182f6;user-select:none}
+.paletteBlock:active{transform:scale(.99)}
+.shapeBtns button{width:100%;border:0;background:#fff;padding:8px;margin:3px 0;border-radius:8px;text-align:left}
+.center{background:#fff;display:flex;flex-direction:column}
+.editorHead{height:55px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 12px;gap:8px}
+.editorHead .title{font-weight:800}.workName{width:170px;border:1px solid #dfe3e8;border-radius:8px;padding:7px 9px;background:#fff;font-weight:700}.editorHead .spacer{flex:1}.editorHead button{border:0;border-radius:8px;padding:8px 10px;background:#f1f3f5}
+.codeArea{flex:1;overflow:auto;background:#fbfcfe;padding:12px}
+.codeCard{display:flex;align-items:center;gap:6px;margin:5px 0}
+.codeBlock{min-height:46px;display:flex;align-items:center;border-radius:9px;color:#fff;font-weight:800;padding:0 12px;flex:1;position:relative;user-select:none}
+.codeBlock .value{background:#fff;color:#222;border-radius:6px;padding:2px 6px;cursor:pointer;margin-left:5px}
+.codeCtl button{border:0;background:#edf0f3;border-radius:5px;width:25px;height:25px}
+.subtle{font-size:11px;color:#777}
+.right{background:#eef1f5;border-left:1px solid #dfe3e8;padding:12px;display:flex;flex-direction:column}
+.stageTitle{font-weight:800;font-size:16px;margin-bottom:8px}.stage{background:#fff;border:1px solid #bbb;border-radius:10px;position:relative;overflow:hidden;height:520px}
+.stageObject{position:absolute;transform:translate(-50%,-50%);user-select:none;cursor:grab}.stageObject:active{cursor:grabbing}
+.status{margin-top:8px;color:#555;font-size:12px}.stageBtns{display:flex;gap:6px;margin-top:8px}.stageBtns button{flex:1;border:0;border-radius:8px;padding:8px;background:#fff}
+.emoji{font-size:38px}.drawIcon{width:60px;height:60px}
+.modal{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.show{display:flex}
+.modalBox{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:22px}.modalBox h2{margin:0 0 8px}
+.objActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 10px;border-bottom:1px solid #ddd}.objActions button{border:0;border-radius:8px;padding:9px 6px;font-weight:800;background:#3182f6;color:white}.objActions button.danger{background:#ef5350}.objActions button:hover{filter:brightness(.96)}
+.objectGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.objectChoice{border:1px solid #ddd;border-radius:12px;padding:8px;background:#fff;text-align:center}.objectChoice:hover{outline:2px solid #3182f6}.objectChoice .preview{height:75px;display:flex;align-items:center;justify-content:center}
+.form input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
+.form button,.modalBtns button{border:0;border-radius:8px;padding:9px 13px;margin:4px}.modalBtns{display:flex;justify-content:flex-end;margin-top:12px}
+.shapeCanvasWrap{display:flex;justify-content:center}.shapeCanvas{border:1px solid #aaa;background:#fff;touch-action:none}
+.hint{font-size:12px;color:#666}
+@media(max-width:1100px){.editor{grid-template-columns:230px 1fr 300px}.objectGrid{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.editor{grid-template-columns:210px 1fr}.right{display:none}.nav{display:none}.hero{flex-direction:column;align-items:flex-start}.works{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">🧩 미니블록코딩</div>
+  <nav class="nav">
+    <button class="active" id="navHome" onclick="showPage('home')">홈</button>
+    <button id="navEditor" onclick="showPage('editor')">코딩하기</button>
+    <button id="navWorks" onclick="showPage('works')">내 작품</button>
+  </nav>
+  <div class="topUser">
+    <span id="userState">로그인하지 않음</span>
+    <button onclick="openAccount()">계정</button>
+  </div>
+</header>
+
+<section id="home" class="page active">
+<div class="home">
+  <div class="hero">
+    <div>
+      <h1>미니블록코딩</h1>
+      <p>홈페이지에서 바로 블록 코딩하고,<br>오브젝트와 작품을 저장해 보세요.</p>
+      <button class="white" onclick="showPage('editor')">🧩 코딩 시작</button>
+      <button class="white" onclick="openObjectAdd()">➕ 오브젝트 추가</button>
+    </div>
+    <div style="font-size:120px">🟧</div>
+  </div>
+
+  <div class="section">
+    <h2>미니블록코딩에서 할 수 있는 것</h2>
+    <div class="cards">
+      <div class="card"><div class="ico">🧩</div><h3>블록 코딩</h3><p>시작·움직임·모양·제어·계산 블록으로 코드를 만들어요.</p></div>
+      <div class="card"><div class="ico">🎨</div><h3>모양 만들기</h3><p>모양 탭에서 기본 모양을 바꾸고 직접 그림도 추가할 수 있어요.</p></div>
+      <div class="card"><div class="ico">🧍</div><h3>여러 오브젝트</h3><p>미니블록, 공, 별, 고양이, 강아지, 자동차 등 여러 개를 사용해요.</p></div>
+      <div class="card"><div class="ico">💾</div><h3>계정과 작품</h3><p>계정에 작품을 저장하고 다시 홈페이지에서 불러올 수 있어요.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>바로 만들기</h2>
+    <div class="card">
+      <p style="margin-top:0">홈페이지와 코딩 프로그램을 한 화면에서 연결했어요.</p>
+      <button class="primary" onclick="showPage('editor')" style="border:0;border-radius:9px;padding:10px 15px">코딩 화면 열기</button>
+    </div>
+  </div>
+</div>
+<div class="footer">미니블록코딩 · 나만의 블록 코딩 공간</div>
+</section>
+
+<section id="editor" class="page">
+<div class="editor">
+  <aside class="left">
+    <div class="objHead">오브젝트</div>
+    <div class="objList" id="objList"></div>
+    <div class="objActions">
+      <button onclick="openObjectAdd()">＋ 오브젝트 추가</button>
+      <button onclick="deleteSelected()" class="danger">🗑 오브젝트 삭제</button>
+    </div>
+    <div class="tabs">
+      <button id="tabShape" onclick="switchTab('shape')">모양</button>
+      <button id="tabBlock" class="active" onclick="switchTab('block')">블록</button>
+    </div>
+    <div id="shapePanel" class="leftPanel" style="display:none">
+      <div class="shapeBtns">
+        <button onclick="prevShape()">◀ 이전 모양</button>
+        <button onclick="nextShape()">다음 모양 ▶</button>
+        <button onclick="openShapeEditor()">✏ 모양 그리기 / 추가</button>
+        <button onclick="deleteCustomShape()">🗑 직접 만든 모양 삭제</button>
+      </div>
+      <div id="shapeInfo" class="hint"></div>
+    </div>
+    <div id="blockPanel" class="leftPanel">
+      <div class="catbar" id="catBar"></div>
+      <div id="palette"></div>
+    </div>
+
+  </aside>
+
+  <main class="center">
+    <div class="editorHead">
+      <span class="title" id="editorTitle">코드 - 미니블록</span>
+      <input id="workName" class="workName" value="나의 작품" title="작품 이름" aria-label="작품 이름">
+      <span class="spacer"></span>
+      <button onclick="copyCode()">📋 복사</button>
+      <button onclick="pasteCode()">📥 붙여넣기</button>
+      <button onclick="saveProject()">💾 저장</button>
+      <button onclick="loadProject()">📂 열기</button><button onclick="openBackgrounds()">🖼 배경</button>
+    </div>
+    <div class="codeArea" id="codeArea"></div>
+  </main>
+
+  <aside class="right">
+    <div class="stageTitle">실행 화면</div>
+    <div class="stage" id="stage"></div>
+    <div class="stageBtns">
+      <button style="background:#27ae60;color:white" onclick="runProject()">▶ 실행</button>
+      <button style="background:#e74c3c;color:white" onclick="stopProject()">■ 정지</button>
+    </div>
+    <div class="status" id="status">준비 완료</div>
+  </aside>
+</div>
+</section>
+
+<section id="works" class="page">
+<div class="home">
+  <h1>내 작품</h1>
+  <div id="worksArea"></div>
+</div>
+</section>
+
+<div id="modal" class="modal"></div>
+
+<script>
+const palette={
+"시작":[["start","🏁 시작하기"],["when_key","⌨ 키를 눌렀을 때"],["when_click","🖱 오브젝트를 클릭했을 때"]],
+"움직임":[["move","→ 10칸 움직이기"],["turn","↻ 15도 회전하기"],["goto","↔ x:0 y:0로 이동하기"],["bounce","↩ 벽에 닿으면 튕기기"],["set_speed","🏃 속도 5로 정하기"]],
+"모양":[["costume","🎨 모양 바꾸기"],["say","💬 안녕하세요! 말하기"],["show","👀 보이기"],["hide","🙈 숨기기"]],
+"소리":[["beep","🔊 소리 내기"]],
+"제어":[["wait","⏱ 1초 기다리기"],["repeat","🔂 3번 반복하기"],["forever","🔁 계속 반복하기"],["forever_wait","⏱🔁 계속 반복하며 1초 기다리기"],["stop","⏹ 모두 멈추기"]],
+"계산":[["add","➕ 1 + 1 계산하기"],["random","🎲 랜덤 숫자"]]
+};
+const colors={"시작":"#f5a623","움직임":"#3d8bfd","모양":"#9b59b6","소리":"#16a085","제어":"#ff8c19","계산":"#8e44ad"};
+const types={미니블록:"miniblock",공:"ball",별:"star",고양이:"cat",강아지:"dog",하트:"heart",나무:"tree",자동차:"car",사과:"apple",로봇:"robot"};
+let project={name:"나의 작품",objects:[]};
+let selected=0,currentCat="시작",running=false;
+let users={},user="";
+try{users=JSON.parse(localStorage.getItem("mbc_users")||"{}")||{}}catch(e){users={}}
+try{user=localStorage.getItem("mbc_user")||""}catch(e){}
+
+function saveUsers(){try{localStorage.setItem("mbc_users",JSON.stringify(users))}catch(e){alert("브라우저 저장을 사용할 수 없습니다.")}}
+function saveUser(){try{localStorage.setItem("mbc_user",user)}catch(e){}}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+ const n=id==="home"?"navHome":id==="editor"?"navEditor":"navWorks";
+ document.getElementById(n).classList.add("active");
+ if(id==="works")renderWorks();
+}
+function openModal(html){
+ const m=document.getElementById("modal");m.innerHTML='<div class="modalBox">'+html+'</div>';m.classList.add("show");
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+
+function objectIcon(name,frame=0){
+ const t=types[name]||"miniblock";
+ if(t==="miniblock")return `<svg class="drawIcon" viewBox="0 0 100 100"><rect x="15" y="15" width="70" height="70" rx="8" fill="${frame%2?"#4d9cff":"#ff7043"}" stroke="#555" stroke-width="3"/><circle cx="38" cy="42" r="7" fill="white"/><circle cx="62" cy="42" r="7" fill="white"/><circle cx="38" cy="42" r="3" fill="#333"/><circle cx="62" cy="42" r="3" fill="#333"/><path d="M35 57 Q50 70 65 57" fill="none" stroke="white" stroke-width="4"/></svg>`;
+ if(t==="ball")return `<svg class="drawIcon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="white" stroke="#333" stroke-width="4"/><polygon points="50,35 64,45 59,62 41,62 36,45" fill="#333"/></svg>`;
+ if(t==="star")return `<svg class="drawIcon" viewBox="0 0 100 100"><polygon points="50,12 61,38 89,39 67,56 74,85 50,68 26,85 33,56 11,39 39,38" fill="#ffd34d" stroke="#c79b00" stroke-width="3"/>${frame%2?'<g stroke="#fff2a6" stroke-width="3"><path d="M13 18h14M20 11v14M73 18h14M80 11v14M9 72h14M16 65v14M77 72h14M84 65v14"/></g>':''}</svg>`;
+ if(t==="cat")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M20 35L25 12 42 28M80 35L75 12 58 28" fill="#f2a65a" stroke="#b96f24" stroke-width="4"/><circle cx="50" cy="50" r="32" fill="#f2a65a" stroke="#b96f24" stroke-width="4"/><path d="${frame%2?'M32 47l8 4M68 47l-8 4':'M33 45h9M58 45h9'}" stroke="#333" stroke-width="4" fill="none"/><path d="M46 55l4 4 4-4" fill="#d86c7c"/><path d="M42 62q8 8 16 0" fill="none" stroke="#5b4034" stroke-width="2"/></svg>`;
+ if(t==="dog")return `<svg class="drawIcon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="33" fill="#c98f5b" stroke="#7a4d27" stroke-width="4"/><ellipse cx="23" cy="52" rx="12" ry="22" fill="#9b6537"/><ellipse cx="77" cy="52" rx="12" ry="22" fill="#9b6537"/>${frame%2?'<path d="M31 47q6-8 12 0M57 47q6-8 12 0" stroke="#5c3d22" stroke-width="3" fill="none"/>':'<circle cx="38" cy="45" r="5" fill="white"/><circle cx="62" cy="45" r="5" fill="white"/><circle cx="38" cy="45" r="2" fill="#222"/><circle cx="62" cy="45" r="2" fill="#222"/>'}<ellipse cx="50" cy="58" rx="12" ry="9" fill="#e6bd8b"/><circle cx="50" cy="57" r="5" fill="#333"/><path d="M43 64q7 8 14 0" stroke="#5c3d22" stroke-width="2" fill="none"/></svg>`;
+ if(t==="heart")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M50 82L15 47Q5 30 19 19q15-12 31 5 16-17 31-5 14 11 4 28z" fill="#ff5c70" stroke="#c43d50" stroke-width="4"/></svg>`;
+ if(t==="tree")return `<svg class="drawIcon" viewBox="0 0 100 100"><rect x="44" y="52" width="12" height="34" fill="#8b5a2b"/><circle cx="34" cy="43" r="22" fill="#69c35b" stroke="#3d8f35" stroke-width="3"/><circle cx="64" cy="39" r="24" fill="#79cf67" stroke="#3d8f35" stroke-width="3"/><circle cx="50" cy="54" r="25" fill="#62b954" stroke="#3d8f35" stroke-width="3"/></svg>`;
+ if(t==="car")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M18 47l12-22h39l14 22" fill="${frame%2?"#ef5350":"#4ea5ff"}" stroke="#2b6ca8" stroke-width="3"/><rect x="10" y="45" width="80" height="28" rx="7" fill="${frame%2?"#ef5350":"#4ea5ff"}" stroke="#2b6ca8" stroke-width="3"/><path d="M32 27h30l9 18H24z" fill="#cce9ff"/><circle cx="28" cy="74" r="9" fill="#333"/><circle cx="72" cy="74" r="9" fill="#333"/></svg>`;
+ if(t==="apple")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M50 81Q19 66 26 39q6-20 24-10 18-10 24 10 7 27-24 42z" fill="#ef5350" stroke="#a52a2a" stroke-width="3"/><rect x="48" y="13" width="5" height="18" fill="#704214"/><ellipse cx="60" cy="16" rx="13" ry="6" fill="#58a64a"/></svg>`;
+ if(t==="robot")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M50 16V8" stroke="#58646c" stroke-width="4"/><circle cx="50" cy="6" r="5" fill="${frame%2?"#ffca28":"#4ea5ff"}" stroke="#58646c" stroke-width="2"/><rect x="18" y="18" width="64" height="43" rx="8" fill="${frame%2?"#cbd5db":"#d7dde1"}" stroke="#58646c" stroke-width="4"/>${frame%2?'<path d="M31 40q5-5 10 0M59 40q5-5 10 0" stroke="#3d719d" stroke-width="3" fill="none"/>':'<circle cx="37" cy="39" r="4" fill="#4ea5ff" stroke="#3d719d" stroke-width="2"/><circle cx="63" cy="39" r="4" fill="#4ea5ff" stroke="#3d719d" stroke-width="2"/>'}<path d="M38 51 Q50 57 62 51" fill="none" stroke="#58646c" stroke-width="3"/><rect x="28" y="61" width="44" height="22" rx="5" fill="#aeb8be" stroke="#58646c" stroke-width="4"/><path d="M28 67L18 74M72 67L82 74M39 83V94M61 83V94" stroke="#58646c" stroke-width="5" stroke-linecap="round"/></svg>`;
+
+
+ if(t==="dino")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M18 72Q10 45 32 31Q46 20 63 32L80 31 90 43 79 53 64 48Q63 70 50 77L34 78Z" fill="#66bd63" stroke="#3d833d" stroke-width="4"/><circle cx="71" cy="39" r="4" fill="white"/><circle cx="71" cy="39" r="2" fill="#222"/><path d="M78 49l8 2" stroke="#333" stroke-width="2"/></svg>`;
+ if(t==="mushroom")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M16 50Q18 18 50 18Q82 18 84 50Z" fill="#ef5350" stroke="#a52a2a" stroke-width="3"/><rect x="34" y="48" width="32" height="36" rx="9" fill="#f0d4aa" stroke="#a77a4c" stroke-width="3"/><circle cx="35" cy="35" r="5" fill="white"/><circle cx="51" cy="28" r="5" fill="white"/><circle cx="67" cy="36" r="5" fill="white"/></svg>`;
+ if(t==="cloud")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M20 67Q10 50 25 39Q31 21 50 29Q64 14 78 29Q92 31 88 48Q95 67 76 70H25Q19 70 20 67Z" fill="white" stroke="#9bb6cf" stroke-width="3"/></svg>`;
+ if(t==="sun")return `<svg class="drawIcon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#ffd34d" stroke="#d6aa00" stroke-width="3"/><g stroke="#e6b800" stroke-width="5"><path d="M50 9v18M50 73v18M9 50h18M73 50h18M20 20l14 14M66 66l14 14M80 20L66 34M34 66L20 80"/></g></svg>`;
+ if(t==="moon")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M69 19Q45 25 44 49Q44 72 68 82Q52 91 36 81Q16 69 18 49Q20 27 40 19Q55 14 69 19Z" fill="#ffe69b" stroke="#c3a15b" stroke-width="3"/></svg>`;
+ if(t==="flower")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M50 49v38" stroke="#4a9a3f" stroke-width="6"/><circle cx="50" cy="43" r="10" fill="#ffd34d"/><g fill="#ff7ca8" stroke="#d95e87" stroke-width="2"><circle cx="50" cy="22" r="12"/><circle cx="70" cy="43" r="12"/><circle cx="50" cy="64" r="12"/><circle cx="30" cy="43" r="12"/></g></svg>`;
+ if(t==="balloon")return `<svg class="drawIcon" viewBox="0 0 100 100"><ellipse cx="50" cy="36" rx="27" ry="33" fill="#ff6b8a" stroke="#b84260" stroke-width="3"/><path d="M50 69v24" stroke="#777" stroke-width="2"/></svg>`;
+ if(t==="boat")return `<svg class="drawIcon" viewBox="0 0 100 100"><path d="M17 57h66L69 77H31Z" fill="#c98952" stroke="#75451f" stroke-width="3"/><path d="M50 56V20L77 56Z" fill="white" stroke="#555" stroke-width="3"/><path d="M12 82Q50 94 88 82" stroke="#3182d8" stroke-width="5" fill="none"/></svg>`;
+ return objectIcon("미니블록",0);
+}
+function iconForStage(name,frame){
+ return objectIcon(name,frame);
+}
+
+
+const BACKGROUNDS={
+plain:{name:"흰색",css:"#fff"},
+sky:{name:"하늘",css:"linear-gradient(#87ceeb 0 62%,#7fc76d 62%)"},
+space:{name:"우주",css:"linear-gradient(#11183d,#243d7a)"},
+classroom:{name:"교실",css:"linear-gradient(#f5e6d2 0 62%,#d2ad7d 62%)"},
+sea:{name:"바다",css:"linear-gradient(#78d7ef 0 62%,#2c9bd1 62%)"},
+forest:{name:"숲",css:"linear-gradient(#a9dcff 0 55%,#72bd65 55%)"},
+night:{name:"밤",css:"linear-gradient(#202b55,#394b73)"}
+};
+function openBackgrounds(){
+ const cards=Object.keys(BACKGROUNDS).map(k=>`<button class="objectChoice" onclick="setBackground('${k}')"><div class="preview" style="background:${BACKGROUNDS[k].css}"></div><b>${BACKGROUNDS[k].name}</b></button>`).join("");
+ openModal(`<h2>배경 선택</h2><div class="objectGrid">${cards}</div><div class="modalBtns"><button onclick="closeModal()">닫기</button></div>`);
+}
+function setBackground(k){project.background=k;closeModal();refreshStage();setStatus("배경: "+BACKGROUNDS[k].name)}
+function refreshObjects(){
+ const box=document.getElementById("objList");box.innerHTML="";
+ project.objects.forEach((o,i)=>{
+   const d=document.createElement("div");d.className="objItem"+(i===selected?" sel":"");
+   d.innerHTML=`<span class="miniIcon">${objectIcon(o.name,o.frame)}</span><span>${escapeHtml(o.name)}</span>`;
+   d.onclick=()=>{selected=i;refreshAll()};
+   d.oncontextmenu=(e)=>{e.preventDefault();selected=i;deleteSelected()};
+   box.appendChild(d);
+ });
+}
+function refreshAll(){refreshObjects();refreshCode();refreshStage();refreshShapeInfo();updateWorkNameField()}
+function updateWorkNameField(){const el=document.getElementById("workName");if(el)el.value=project.name||"나의 작품"}
+function setWorkName(v){const n=String(v||"").trim();project.name=n||"나의 작품";updateWorkNameField();setStatus("작품 이름을 바꿨습니다.")}
+function addObject(name){
+ if(name==="Robot"||name==="로보")name="로봇";
+ project.objects.push({name,x:80+(project.objects.length%3)*115,y:90+(project.objects.length%4)*90,frame:0,custom:[],bounce:false,speed:5,visible:true,angle:0,blocks:[newBlock("start")]});
+ selected=project.objects.length-1;refreshAll()
+}
+function openObjectAdd(){
+ const normalCards=Object.keys(types).filter(name=>name!=="로봇").map(name=>`<button class="objectChoice" onclick="addObjectFromWindow('${name}',0)"><div class="preview">${objectIcon(name,0)}</div><b>${name}</b></button>`).join("");
+ const robotCards=`<button class="objectChoice" onclick="addObjectFromWindow('로봇',0)"><div class="preview">${objectIcon('로봇',0)}</div><b>로봇</b></button>`;
+ openModal(`<h2>오브젝트 추가</h2><p class="hint">그림을 클릭하면 바로 추가돼요. 여러 개를 계속 추가할 수 있어요.</p><div class="objectGrid">${normalCards}${robotCards}</div><div class="modalBtns"><button onclick="closeModal()">닫기</button></div>`)
+}
+function addObjectFromWindow(n, frame=0){addObject(n);if(project.objects.length)project.objects[project.objects.length-1].frame=frame;refreshAll();showPage("editor");openObjectAdd()}
+function renameSelected(){if(!project.objects.length)return;let n=prompt("새 오브젝트 이름",project.objects[selected].name);if(n){project.objects[selected].name=n;refreshAll()}}
+function deleteSelected(){if(!project.objects.length)return;const removed=project.objects[selected]?.name||"오브젝트";project.objects.splice(selected,1);selected=Math.max(0,Math.min(selected,project.objects.length-1));refreshAll();setStatus(removed+" 오브젝트를 삭제했습니다.")}
+
+function switchTab(tab){
+ if(tab==="shape"){
+  document.getElementById("shapePanel").style.display="block";
+  document.getElementById("blockPanel").style.display="none";
+  document.getElementById("tabShape").classList.add("active");document.getElementById("tabBlock").classList.remove("active")
+ }else{
+  document.getElementById("shapePanel").style.display="none";
+  document.getElementById("blockPanel").style.display="block";
+  document.getElementById("tabBlock").classList.add("active");document.getElementById("tabShape").classList.remove("active")
+ }
+}
+function refreshShapeInfo(){if(!project.objects.length){document.getElementById("shapeInfo").innerHTML="오브젝트를 추가해 주세요.";return}let o=project.objects[selected];document.getElementById("shapeInfo").innerHTML=`현재 모양: ${o.frame+1} / ${o.custom.length+(["미니블록","별","고양이","강아지","자동차","로봇"].includes(o.name)?2:1)}`}
+function changeFrame(delta){let o=project.objects[selected];let n=["미니블록","별","고양이","강아지","자동차","로봇"].includes(o.name)?2:1;n+=o.custom.length;o.frame=(o.frame+delta+n)%n;refreshAll()}
+function prevShape(){changeFrame(-1)}function nextShape(){changeFrame(1)}
+function deleteCustomShape(){let o=project.objects[selected];let built=["미니블록","별","고양이","강아지","자동차","로봇"].includes(o.name)?2:1;if(o.frame>=built){o.custom.splice(o.frame-built,1);o.frame=built?Math.min(o.frame,built+o.custom.length-1):0;refreshAll()}}
+
+function openShapeEditor(){
+ let canvas=`<div class="shapeCanvasWrap"><canvas id="drawCanvas" class="shapeCanvas" width="520" height="380"></canvas></div>`;
+ openModal(`<h2>모양 그리기</h2><p class="hint">마우스로 그려서 새 모양을 만들 수 있어요. 코드가 없어도 됩니다.</p><div style="margin:8px 0"><input id="drawColor" type="color" value="#222222"><input id="drawWidth" type="number" min="1" max="20" value="5" style="width:70px"></div>${canvas}<div class="modalBtns"><button onclick="closeModal()">취소</button><button class="primary" onclick="saveDrawnShape()">💾 모양 저장</button></div>`);
+ const cv=document.getElementById("drawCanvas"),ctx=cv.getContext("2d"),strokes=[];let cur=null;
+ cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);cur={points:[e.offsetX,e.offsetY],color:document.getElementById("drawColor").value,width:+document.getElementById("drawWidth").value};strokes.push(cur)}
+ cv.onpointermove=e=>{if(!cur)return;let p=cur.points,nx=e.offsetX,ny=e.offsetY;ctx.strokeStyle=cur.color;ctx.lineWidth=cur.width;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(p[p.length-2],p[p.length-1]);ctx.lineTo(nx,ny);ctx.stroke();p.push(nx,ny)}
+ cv.onpointerup=()=>cur=null;cv.onpointerleave=()=>cur=null;cv.dataset.strokes=JSON.stringify(strokes)
+ window._drawStrokes=strokes
+}
+function saveDrawnShape(){if(!window._drawStrokes||!window._drawStrokes.length){alert("먼저 그림을 그려 주세요.");return}project.objects[selected].custom.push(window._drawStrokes);project.objects[selected].frame=project.objects[selected].custom.length+1;window._drawStrokes=null;closeModal();refreshAll()}
+
+function newBlock(t){let b={type:t};if(t==="move")b.value=10;if(t==="turn")b.value=15;if(t==="wait")b.value=1;if(t==="repeat")b.value=3;if(t==="forever_wait")b.value=1;if(t==="say")b.value="안녕하세요!";if(t==="when_key")b.key="space";if(t==="set_speed")b.value=5;if(t==="goto"){b.x=0;b.y=0}if(t==="add"){b.a=1;b.b=1}return b}
+function blockText(b){let t=b.type;if(t==="start")return"🏁 시작하기";if(t==="when_key")return`⌨ '${b.key||"space"}' 키를 눌렀을 때`;if(t==="when_click")return"🖱 오브젝트를 클릭했을 때";if(t==="move")return`→ ${b.value}칸 움직이기`;if(t==="turn")return`↻ ${b.value}도 회전하기`;if(t==="goto")return`↔ x:${b.x} y:${b.y}로 이동하기`;if(t==="bounce")return"↩ 벽에 닿으면 튕기기";if(t==="set_speed")return`🏃 속도 ${b.value}로 정하기`;if(t==="costume")return"🎨 모양 바꾸기";if(t==="say")return`💬 ${b.value} 말하기`;if(t==="show")return"👀 보이기";if(t==="hide")return"🙈 숨기기";if(t==="beep")return"🔊 소리 내기";if(t==="wait")return`⏱ ${b.value}초 기다리기`;if(t==="repeat")return`🔂 ${b.value}번 반복하기`;if(t==="forever")return"🔁 계속 반복하기";if(t==="forever_wait")return`⏱🔁 계속 반복하며 ${b.value}초 기다리기`;if(t==="stop")return"⏹ 모두 멈추기";if(t==="add")return`➕ ${b.a}+${b.b} 계산하기`;if(t==="random")return"🎲 랜덤 숫자";return t}
+function findColor(t){for(let c in palette)for(let x of palette[c])if(x[0]===t)return colors[c];return"#777"}
+function selectCategory(cat){currentCat=cat;document.querySelectorAll(".catbar button").forEach(b=>b.classList.toggle("active",b.dataset.cat===cat));document.getElementById("palette").innerHTML=palette[cat].map(x=>`<div class="paletteBlock" style="border-color:${colors[cat]}" onclick="addBlock('${x[0]}')">${x[1]}</div>`).join("")}
+function refreshCode(){
+ updateWorkNameField();
+ if(!project.objects.length){document.getElementById("editorTitle").textContent="코드";document.getElementById("codeArea").innerHTML='<div class="hint">오브젝트를 추가하면 블록을 만들 수 있어요.</div>';return}
+ document.getElementById("editorTitle").textContent="코드 - "+project.objects[selected].name;
+ const area=document.getElementById("codeArea");area.innerHTML="";
+ project.objects[selected].blocks.forEach((b,i)=>{
+  const row=document.createElement("div");row.className="codeCard";
+  const card=document.createElement("div");card.className="codeBlock";card.style.background=findColor(b.type);
+  card.textContent=blockText(b);
+  if(!["start","when_key","when_click","bounce","costume","show","hide","beep","stop"].includes(b.type)){
+    card.ondblclick=()=>editBlock(i)
+  }else if(b.type==="when_key"){card.ondblclick=()=>captureKey(i)}
+  row.appendChild(card);
+  const ctl=document.createElement("div");ctl.className="codeCtl";
+  if(i>0){let up=document.createElement("button");up.textContent="▲";up.onclick=()=>swapBlock(i,-1);ctl.appendChild(up)}
+  if(i<project.objects[selected].blocks.length-1){let dn=document.createElement("button");dn.textContent="▼";dn.onclick=()=>swapBlock(i,1);ctl.appendChild(dn)}
+  if(b.type!=="start"){let del=document.createElement("button");del.textContent="×";del.onclick=()=>removeBlock(i);ctl.appendChild(del)}
+  row.appendChild(ctl);area.appendChild(row)
+ })
+}
+function addBlock(t){if(!project.objects.length)return;let b=project.objects[selected].blocks;if(t==="start"&&b.some(x=>x.type==="start"))return;b.push(newBlock(t));refreshCode()}
+function swapBlock(i,d){let b=project.objects[selected].blocks,j=i+d;if(j>=0&&j<b.length&&b[j].type!=="start"){[b[i],b[j]]=[b[j],b[i]];refreshCode()}}
+function removeBlock(i){project.objects[selected].blocks.splice(i,1);refreshCode()}
+function captureKey(i){
+ openModal(`<h2>키 선택</h2><p>원하는 키를 한 번 눌러 주세요.</p><div id="keyShow" style="font-size:22px;font-weight:800;color:#3182f6;text-align:center;padding:18px">키 대기 중...</div><div class="modalBtns"><button onclick="closeModal()">취소</button></div>`);
+ const handler=e=>{let key=e.key===" "?"space":e.key;project.objects[selected].blocks[i].key=key;document.removeEventListener("keydown",handler);closeModal();refreshCode()};document.addEventListener("keydown",handler)
+}
+function editBlock(i){
+ let b=project.objects[selected].blocks[i];
+ if(b.type==="say"){let v=prompt("말할 내용",b.value);if(v!==null)b.value=v}
+ else if(b.type==="goto"){let x=prompt("x 값",b.x),y=prompt("y 값",b.y);if(x!==null&&y!==null){b.x=+x;b.y=+y}}
+ else if(b.type==="add"){let a=prompt("첫 숫자",b.a),c=prompt("두 번째 숫자",b.b);if(a!==null&&c!==null){b.a=+a;b.b=+c}}
+ else{let v=prompt("값을 입력하세요",b.value);if(v!==null&&!Number.isNaN(+v)){b.value=+v}}
+ refreshCode()
+}
+
+function refreshStage(){
+ const st=document.getElementById("stage");st.innerHTML="";st.style.background=BACKGROUNDS[project.background||"plain"].css;
+ project.objects.forEach((o,i)=>{
+  if(!o.visible)return;
+  const d=document.createElement("div");d.className="stageObject";d.style.left=o.x+"px";d.style.top=o.y+"px";d.innerHTML=o.custom.length&&o.frame>=(["미니블록","별","고양이","강아지","자동차","로봇"].includes(o.name)?2:1)?`<span class="emoji">✏️</span>`:objectIcon(o.name,o.frame);
+  d.onpointerdown=e=>{if(running)return;selected=i;let sx=e.clientX,sy=e.clientY,ox=o.x,oy=o.y;d.setPointerCapture(e.pointerId);d.onpointermove=ev=>{o.x=ox+ev.clientX-sx;o.y=oy+ev.clientY-sy;d.style.left=o.x+"px";d.style.top=o.y+"px"};d.onpointerup=()=>{d.onpointermove=null;refreshObjects();}};
+  st.appendChild(d)
+ })
+}
+function runProject(){if(running)return;running=true;document.getElementById("status").textContent="실행 중...";runOne(0)}
+function runOne(i){
+ if(!running){return}if(i>=project.objects.length){running=false;document.getElementById("status").textContent="실행 완료";return}
+ execute(project.objects[i],project.objects[i].blocks,0,()=>{if(running)setTimeout(()=>runOne(i+1),20)})
+}
+function execute(o,blocks,depth,done){if(!running||depth>8){done();return}let i=0;function step(){if(!running||i>=blocks.length){done();return}let b=blocks[i++];if(b.type==="start"||b.type==="when_key"||b.type==="when_click"){step();return}
+ if(b.type==="move"){move(o,+b.value,step)} else if(b.type==="turn"){o.angle=(o.angle+(+b.value||0))%360;refreshStage();step()}
+ else if(b.type==="bounce"){o.bounce=true;step()}
+ else if(b.type==="costume"){o.frame=(o.frame+1)%costumeCount(o);refreshStage();step()}
+ else if(b.type==="say"){alert(o.name+": "+b.value);step()}
+ else if(b.type==="show"){o.visible=true;refreshStage();step()}
+ else if(b.type==="hide"){o.visible=false;refreshStage();step()}
+ else if(b.type==="wait"){setTimeout(step,Math.max(0,+b.value*1000))}
+ else if(b.type==="stop"){running=false}
+ else if(b.type==="repeat"){let n=Math.max(1,Math.floor(b.value));let c=0;const loop=()=>{if(!running||c++>=n){step();return}execute(o,blocks.slice(i),depth+1,loop)};loop()}
+ else if(b.type==="forever"){const loop=()=>{if(!running)return;execute(o,blocks.slice(i),depth+1,loop)};loop()}
+ else if(b.type==="forever_wait"){const loop=()=>{if(!running)return;execute(o,blocks.slice(i),depth+1,()=>{setTimeout(loop,Math.max(0,+b.value*1000))})};loop()}
+ else step()}
+ step()}
+function move(o,d,done){let target=Math.abs(d)*2,stepN=0;const tick=()=>{if(!running){done();return}if(stepN++>=target){done();return}let r=o.angle*Math.PI/180,dx=Math.cos(r)*(o.speed||5)/3,dy=-Math.sin(r)*(o.speed||5)/3,nx=o.x+dx,ny=o.y+dy;if(o.bounce&&(nx<30||nx>295)){o.angle=180-o.angle;nx=Math.max(30,Math.min(295,nx))}if(o.bounce&&(ny<50||ny>465)){o.angle=-o.angle;ny=Math.max(50,Math.min(465,ny))}o.x=nx;o.y=ny;if(costumeCount(o)>1&&stepN%6===0)o.frame=(o.frame+1)%costumeCount(o);refreshStage();setTimeout(tick,10)};tick()}
+function costumeCount(o){return (["미니블록","별","고양이","강아지","자동차","로봇"].includes(o.name)?2:1)+(o.custom?.length||0)}
+
+function copyCode(){
+ const text=project.objects[selected].blocks.map(b=>blockText(b)).join("\\n");
+ navigator.clipboard?.writeText(text).then(()=>setStatus("코드를 복사했습니다.")).catch(()=>{prompt("코드를 복사하세요",text)})
+}
+function pasteCode(){
+ const text=prompt("붙여넣을 블록 텍스트를 입력하세요.");
+ if(!text)return;
+ const blocks=[newBlock("start")];
+ text.split(/\n/).forEach(s=>{
+  s=s.trim();
+  if(s.startsWith("→")){let b=newBlock("move");b.value=parseFloat(s.match(/-?\\d+(?:\\.\\d+)?/)?.[0]||10);blocks.push(b)}
+  else if(s.startsWith("↻")){let b=newBlock("turn");b.value=parseFloat(s.match(/-?\\d+(?:\\.\\d+)?/)?.[0]||15);blocks.push(b)}
+  else if(s.includes("벽에 닿으면"))blocks.push(newBlock("bounce"));
+  else if(s.includes("모양 바꾸기"))blocks.push(newBlock("costume"));
+  else if(s.includes("계속 반복하며")){let b=newBlock("forever_wait");b.value=parseFloat(s.match(/-?\\d+(?:\\.\\d+)?/)?.[0]||1);blocks.push(b)}
+  else if(s.includes("계속 반복하기"))blocks.push(newBlock("forever"));
+  else if(s.includes("기다리기")){let b=newBlock("wait");b.value=parseFloat(s.match(/-?\\d+(?:\\.\\d+)?/)?.[0]||1);blocks.push(b)}
+  else if(s.includes("말하기")){let b=newBlock("say");b.value=s.replace(/^💬?\s*/,"").replace("말하기","").trim();blocks.push(b)}
+ });
+ project.objects[selected].blocks=blocks;refreshCode()
+}
+
+function saveProject(){
+ const data=JSON.stringify(project,null,2),blob=new Blob([data],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=((project.name||"나의 작품").replace(/[\\/:*?"<>|]/g,"_")||"나의 작품")+".miniblock";a.click();URL.revokeObjectURL(a.href);setStatus("작품 파일을 저장했습니다.")
+}
+function loadProject(){
+ const inp=document.createElement("input");inp.type="file";inp.accept=".miniblock,.json";
+ inp.onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{project=JSON.parse(r.result);project.name=project.name||"나의 작품";if(!project.objects?.length)throw Error();selected=0;refreshAll();setStatus("작품을 불러왔습니다.")}catch(err){alert("작품 파일이 올바르지 않습니다.")}};r.readAsText(f)};inp.click()
+}
+function setStatus(s){document.getElementById("status").textContent=s}
+
+function openAccount(){
+ openModal(`<h2>계정</h2>${user?`<p>현재 로그인: <b>${escapeHtml(user)}</b></p><div class="modalBtns"><button onclick="saveAccountWork();closeModal()">계정에 작품 저장</button><button onclick="logout();closeModal()">로그아웃</button><button onclick="closeModal()">닫기</button></div>`:`<div class="form"><input id="accUser" placeholder="아이디"><input id="accPw" type="password" placeholder="비밀번호"></div><div class="modalBtns"><button onclick="doRegister()">계정 만들기</button><button class="primary" onclick="doLogin()">로그인</button><button onclick="closeModal()">닫기</button></div>`}`)
+}
+function doRegister(){let u=document.getElementById("accUser").value.trim(),p=document.getElementById("accPw").value;if(!u||!p)return alert("아이디와 비밀번호를 입력하세요.");if(users[u])return alert("이미 있는 계정입니다.");users[u]={password:p,works:[]};saveUsers();user=u;saveUser();updateUser();closeModal()}
+function doLogin(){let u=document.getElementById("accUser").value.trim(),p=document.getElementById("accPw").value;if(users[u]?.password===p){user=u;saveUser();updateUser();closeModal()}else alert("아이디 또는 비밀번호가 맞지 않습니다.")}
+function logout(){user="";try{localStorage.removeItem("mbc_user")}catch(e){}updateUser()}
+function updateUser(){document.getElementById("userState").textContent=user?user+"님":"로그인하지 않음"}
+function saveAccountWork(){
+ if(!user)return openAccount();
+ const name=(project.name||"나의 작품").trim()||"나의 작품";
+ project.name=name;
+ let works=users[user].works||[];works=works.filter(w=>w.name!==name);works.push({name,data:project,icon:"🧩"});users[user].works=works.slice(-50);saveUsers();setStatus("‘"+name+"’ 작품을 계정에 저장했습니다.")
+}
+function renderWorks(){
+ let box=document.getElementById("worksArea");
+ if(!user){box.innerHTML='<div class="empty">로그인하면 계정에 작품을 저장하고 관리할 수 있어요.</div>';return}
+ let works=users[user].works||[];
+ if(!works.length){box.innerHTML='<div class="empty">아직 저장된 작품이 없어요.</div>';return}
+ box.innerHTML='<div class="works">'+works.map((w,i)=>`<div class="work"><div class="thumb">${w.icon||"🧩"}</div><div class="workrow"><b>${escapeHtml(w.name)}</b><div style="display:flex;gap:6px"><button onclick="loadWork(${i})">불러오기</button><button onclick="deleteWork(${i})" style="background:#ffe7e7">삭제</button></div></div></div>`).join("")+'</div>'
+}
+function deleteWork(i){
+ if(!user) return;
+ const works=users[user].works||[];
+ if(!works[i]) return;
+ const name=works[i].name||"이 작품";
+ openModal(`<h2>작품 삭제</h2><p>‘${escapeHtml(name)}’ 작품을 삭제할까요?</p><p style="color:#777;font-size:13px">삭제한 작품은 내 작품 목록에서 사라집니다.</p><div class="modalBtns"><button onclick="closeModal()">취소</button><button class="danger" onclick="confirmDeleteWork(${i})">동의</button></div>`);
+}
+function confirmDeleteWork(i){
+ if(!user) return closeModal();
+ const works=users[user].works||[];
+ if(!works[i]) return closeModal();
+ const name=works[i].name||"이 작품";
+ works.splice(i,1);
+ users[user].works=works;
+ saveUsers();
+ renderWorks();
+ closeModal();
+ setStatus("‘"+name+"’ 작품을 삭제했습니다.");
+}
+function loadWork(i){project=users[user].works[i].data||{name:users[user].works[i].name||"나의 작품",objects:[]};project.name=project.name||users[user].works[i].name||"나의 작품";selected=0;showPage("editor");refreshAll();setStatus("계정 작품을 불러왔습니다.")}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function updateUser(){document.getElementById("userState").textContent=user?user+"님":"로그인하지 않음"}
+
+for(const c of Object.keys(palette)){let b=document.createElement("button");b.textContent=c;b.dataset.cat=c;b.onclick=()=>selectCategory(c);document.getElementById("catBar").appendChild(b)}
+const workNameEl=document.getElementById("workName"); if(workNameEl){workNameEl.addEventListener("change",e=>setWorkName(e.target.value)); workNameEl.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();setWorkName(e.target.value);e.target.blur()}})}
+selectCategory("시작");
+project.objects.push({name:"미니블록",x:120,y:150,frame:0,custom:[],bounce:false,speed:5,visible:true,angle:0,blocks:[newBlock("start")]});
+refreshAll();updateUser();
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="Delete"&&!e.ctrlKey&&!e.metaKey){removeSelectedObject();return}
+ if(e.ctrlKey&&e.key.toLowerCase()==="s"){e.preventDefault();saveProject()}
+ if(e.ctrlKey&&e.key.toLowerCase()==="o"){e.preventDefault();loadProject()}
+ if(e.ctrlKey&&e.key.toLowerCase()==="a"){e.preventDefault();openObjectAdd()}
+});
+</script>
+</body>
+</html>
